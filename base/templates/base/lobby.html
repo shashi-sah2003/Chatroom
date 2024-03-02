@@ -12,8 +12,25 @@
             <h1>Welcome to ChatRoom</h1>
             <p>A group video calling web-application</p>
         </div>
+
+        <form id="form">
+            <div class="form-field">
+                <input type="submit" value="Join Stream" />
+            </div>
+        </form>
     </section>
 <h2>Lobby</h2>
 
 </main>
+
+<script type="text/javascript">
+    let form = document.getElementById('form')
+
+    let handleSubmit = async(e) => {
+        e.preventDefault()
+        window.open('/room/', '_self')
+    }
+
+    form.addEventListener('submit', handleSubmit)
+</script>
 {% endblock content %}
