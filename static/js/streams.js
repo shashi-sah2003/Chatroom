@@ -1,6 +1,6 @@
 const APP_ID = '1335aae771d846a1b798856891edba7d'
-const CHANNEL = 'main'
-const token = '007eJxTYCh+wnixq5991s+VW5lDDJuC+OQObn9Yq1Ehbyy386PRd14FBkNjY9PExFRzc8MUCxOzRMMkc0sLC1MzC0vD1JSkRPMUdfHHqQ2BjAwW334yMjJAIIjPwpCbmJnHwAAA7+QeaA=='
+const CHANNEL = 'chatroom'
+const token = '007eJxTYNh5Jv/UnpNlgfv5KrYcOtV63rV/SwaXZtbaB0t1/u4tCXBXYDA0NjZNTEw1NzdMsTAxSzRMMre0sDA1s7A0TE1JSjRPeVv6M7UhkJHhLdseFkYGCATxORiSMxJLivLzcxkYAKB5I/Q='
 
 let UID;
 
@@ -12,7 +12,7 @@ let remoteUsers = {}
 let joinAndDisplayLocalStream = async () => {
 
     client.on('user-published', handleUserJoined)
-    client.on('user-left', handleUser)
+    client.on('user-left', handleUserLeft)
 
 
     UID = await client.join(APP_ID, CHANNEL, token, null)
@@ -55,4 +55,56 @@ let handleUserJoined = async(user, mediaType) => {
         user.audioTrack.play()
     }
 }
+
+let handleUserLeft = async(user) =>{
+    delete remoteUsers[user.uid]
+    document.getElementById(`user-container-${user.uid}`).remove()
+}
+
+let leaveAndRemoveLocalStream = async() => {
+
+    for ( let i =0; localTracks.length > i; i++){
+        localTracks[i].stop()
+        localTracks[i].close()
+    }
+
+    await client.leave()
+    window.open('/', '_self')
+}
+
+let toggleCamera = async(e) => {
+    if(localTracks[1].muted){
+        await localTracks[1].setMuted(false)
+        e.target.style.backgroundColor = '#fff';
+    }
+    else{
+        
+        await localTracks[1].setMuted(true)
+        e.target.style.backgroundColor = 'rgba(255, 80, 80, 1)';
+        
+    }
+}
+
+let toggleMic = async(e) => {
+    if(localTracks[0].muted){
+        await localTracks[0].setMuted(false)
+        e.target.style.backgroundColor = '#fff';
+    }
+    else{
+        
+        await localTracks[0].setMuted(true)
+        e.target.style.backgroundColor = 'rgba(255, 80, 80, 1)';
+        
+    }
+}
+
 joinAndDisplayLocalStream()
+
+document.getElementById('leave-btn').addEventListener('click', leaveAndRemoveLocalStream)
+document.getElementById('camera-btn').addEventListener('click', function(e) {
+    toggleCamera(e);
+});
+
+document.getElementById('mic-btn').addEventListener('click', function(e) {
+    toggleMic(e);
+});
